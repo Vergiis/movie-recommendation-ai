@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+    .core {
+        @apply mx-auto w-screen h-screen font-AzeretMono text-gray-200
+      }
+    .text_highlight{
+        @apply font-bold inline
+    }
+    body {
+        @apply bg-Base
+    }
+}
+
+::-webkit-scrollbar {
+    width: 3px;
+}
+::-webkit-scrollbar-track {
+    background: #c0bebe;
+}
+::-webkit-scrollbar-thumb {
+    background-color: #46444a;
+    border-radius: 0px;
+    border: 0px none;
+}
+::-webkit-scrollbar-thumb:hover {
+    background-color: #494849;
+}
