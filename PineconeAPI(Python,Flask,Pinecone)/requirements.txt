@@ -1,0 +1,8 @@
+flask
+flask_restful
+dotenv
+flask_cors
+marshmallow
+pinecone
+torch
+transformers

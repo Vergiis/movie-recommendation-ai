@@ -3,6 +3,8 @@ from flask_restful import Resource
 from marshmallow import Schema, fields, ValidationError
 from utils.query_pinecone import MovieListIndex
 
+
+
 # Movie List post request validator
 class ListRequest(Schema):
     prompt = fields.String(required=True)
@@ -30,6 +32,7 @@ class ListFromPrompt(Resource):
                 data.get("date_end",0),
                 data.get("types",[])
                 )
+
             #Parse casts field
             for item in movie_list:
                 try:
@@ -48,3 +51,40 @@ class ListFromPrompt(Resource):
             return {"data": movie_list}, 200
         except ValidationError as err:
             return {"error": err.messages}, 400
+
+# Movie List post request validator
+class IDSRequest(Schema):
+    ids_list = fields.List(fields.String())
+
+ids_req=IDSRequest()
+
+
+# /get_movie_from_ids
+class ListFromIDS(Resource):
+    def post(self):
+        try:
+            data=ids_req.load(request.json)
+            if len(data.get("ids_list",[]))<=0:
+                return {"data":[]}, 200
+
+            movie_list=movie_list_index.query_from_id(data.get("ids_list",[]))
+
+            #Parse casts field
+            for item in movie_list:
+                try:
+                    cast=json.loads(item["casts"].replace("'", "\"").replace("None", "null"))
+                    out=[]
+                    for person in cast:
+                        out.append({
+                            "name":person["name"]["display_name"],
+                            "avatar":person["name"]["avatars"][0]["url"] if person["name"]["avatars"] is not None else None,
+                            "character":person["characters"][0] if person["characters"] is not None else ""
+                        })
+                    item["casts"]=json.dumps(out)
+                except:
+                    item["casts"]=json.dumps([])
+
+            return {"data": movie_list}, 200
+        except ValidationError as err:
+            return {"error": err.messages}, 400
+
